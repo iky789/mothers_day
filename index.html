@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fun interactive game to celebrate Mother's Day!">
     <meta name="keywords" content="Mother's Day, game, flowers, heart, surprise">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>Mother's Day Surprise</title>
     <link rel="icon" href="./OIP (1).jpeg">
     <style>
@@ -173,6 +174,18 @@
             height: 10px;
             pointer-events: none;
         }
+        a{
+            text-decoration: none;
+            transition: all 1s;
+            color: #e8578f;
+
+        }
+        a:hover{
+            color: black;
+            text-decoration: underline;
+            transition: all 1s;
+            font-weight: bold;
+        }
         
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -202,6 +215,7 @@
         <p>You make everything brighter and better.</p>
         <p>With all my love today and always!</p>
         <button id="replay-btn" class="btn">Play Again</button>
+        <p>Do you want a website for your store?<a href="https://wa.me/233533980571" target="_blank">Contact <i class="fab fa-whatsapp"></i></a></p>
     </div>
     
     <script>
