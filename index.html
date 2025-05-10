@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A fun interactive game to celebrate Mother's Day!">
+    <meta name="keywords" content="Mother's Day, game, flowers, heart, surprise">
+    <title>Mother's Day Surprise</title>
+    <link rel="icon" href="./OIP (1).jpeg">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffeaf1;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #e8578f;
+            margin-bottom: 15px;
+        }
+        
+        .heart-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+            cursor: pointer;
+        }
+        
+        .heart {
+            background-color: #ff4d6d;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -50px;
+            transform: rotate(-45deg) scale(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .heart:before, .heart:after {
+            content: '';
+            background-color: #ff4d6d;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+        }
+        
+        .heart:before {
+            top: -50px;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: 50px;
+        }
+        
+        .flower {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .flower:hover {
+            transform: scale(1.2);
+        }
+        
+        .flower-center {
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            border-radius: 50%;
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            z-index: 2;
+        }
+        
+        .petal {
+            width: 20px;
+            height: 25px;
+            background-color: pink;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 1;
+        }
+        
+        .counter {
+            font-size: 24px;
+            color: #e8578f;
+            margin: 10px 0;
+        }
+        
+        #message {
+            font-size: 18px;
+            margin: 15px 0;
+            min-height: 50px;
+        }
+        
+        #final-message {
+            display: none;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(232, 87, 143, 0.3);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        #final-message h2 {
+            color: #e8578f;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        #final-message p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .pulsing-heart {
+            color: #e8578f;
+            font-size: 30px;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .btn {
+            background-color: #e8578f;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            background-color: #d03f78;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="game-screen">
+        <h1>Tap the Flowers!</h1>
+        <p>Click on all the flowers to reveal a special surprise</p>
+        
+        <div class="heart-container" id="heart-container">
+            <div class="heart" id="heart"></div>
+            <!-- Flowers will be added here -->
+        </div>
+        
+        <div class="counter" id="counter">0 / 10</div>
+        <div id="message">Find and click on all the flowers!</div>
+    </div>
+    
+    <div id="final-message">
+        <h2>Happy Mother's Day! <span class="pulsing-heart">❤️</span></h2>
+        <p>To the most amazing mom in the world!</p>
+        <p>Thank you for your endless love, patience, and care.</p>
+        <p>You make everything brighter and better.</p>
+        <p>With all my love today and always!</p>
+        <button id="replay-btn" class="btn">Play Again</button>
+    </div>
+    
+    <script>
+        // Game variables
+        let flowersClicked = 0;
+        const totalFlowers = 10;
+        const flowerColors = ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA', '#FF6B6B', '#4ECDC4', '#CCF0E1', '#FF9A76'];
+        
+        // DOM elements
+        const heartContainer = document.getElementById('heart-container');
+        const heart = document.getElementById('heart');
+        const counter = document.getElementById('counter');
+        const message = document.getElementById('message');
+        const gameScreen = document.getElementById('game-screen');
+        const finalMessage = document.getElementById('final-message');
+        const replayBtn = document.getElementById('replay-btn');
+        
+        // Initialize the game
+        createFlowers();
+        
+        // Event Listeners
+        replayBtn.addEventListener('click', restartGame);
+        
+        // Create flowers around the heart
+        function createFlowers() {
+            for (let i = 0; i < totalFlowers; i++) {
+                createFlower(i);
+            }
+        }
+        
+        function createFlower(index) {
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            flower.setAttribute('data-index', index);
+            
+            // Position flowers in a circle around the heart
+            const angle = (index / totalFlowers) * Math.PI * 2;
+            const radius = 120;
+            const x = Math.cos(angle) * radius + 150 - 25;
+            const y = Math.sin(angle) * radius + 150 - 25;
+            
+            flower.style.left = x + 'px';
+            flower.style.top = y + 'px';
+            
+            // Create flower center
+            const center = document.createElement('div');
+            center.classList.add('flower-center');
+            flower.appendChild(center);
+            
+            // Create petals
+            const petalCount = 6;
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                
+                // Position petal around center
+                const petalAngle = (i / petalCount) * Math.PI * 2;
+                const petalX = Math.cos(petalAngle) * 15 + 15;
+                const petalY = Math.sin(petalAngle) * 15 + 12.5;
+                
+                petal.style.left = petalX + 'px';
+                petal.style.top = petalY + 'px';
+                petal.style.backgroundColor = flowerColors[index % flowerColors.length];
+                
+                flower.appendChild(petal);
+            }
+            
+            // Add click event
+            flower.addEventListener('click', () => {
+                if (!flower.classList.contains('clicked')) {
+                    clickFlower(flower);
+                }
+            });
+            
+            heartContainer.appendChild(flower);
+        }
+        
+        // Handle flower click
+        function clickFlower(flower) {
+            flower.classList.add('clicked');
+            flower.style.transform = 'scale(0)';
+            flowersClicked++;
+            
+            updateCounter();
+            
+            // Check if all flowers are clicked
+            if (flowersClicked === totalFlowers) {
+                setTimeout(revealHeart, 300);
+            }
+        }
+        
+        // Update the counter
+        function updateCounter() {
+            counter.textContent = `${flowersClicked} / ${totalFlowers}`;
+            
+            // Update message based on progress
+            if (flowersClicked < totalFlowers / 2) {
+                message.textContent = "Keep going! Find more flowers!";
+            } else if (flowersClicked < totalFlowers) {
+                message.textContent = "Almost there! Just a few more!";
+            } else {
+                message.textContent = "Wonderful! You found them all!";
+            }
+        }
+        
+        // Reveal the heart
+        function revealHeart() {
+            // Animate the heart
+            heart.style.transform = 'rotate(-45deg) scale(1)';
+            
+            // Add click event to heart
+            heartContainer.onclick = showFinalMessage;
+            
+            message.textContent = "Click the heart to see your surprise!";
+        }
+        
+        // Show the final message
+        function showFinalMessage() {
+            // Create confetti effect
+            createConfetti();
+            
+            // Hide game screen and show final message
+            gameScreen.style.display = 'none';
+            finalMessage.style.display = 'block';
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#FF5722', '#E91E63', '#9C27B0', '#3F51B5', '#2196F3', '#009688', '#4CAF50', '#FFEB3B', '#FF9800'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    
+                    // Random confetti properties
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const left = Math.random() * window.innerWidth;
+                    const size = Math.random() * 10 + 5;
+                    
+                    confetti.style.backgroundColor = color;
+                    confetti.style.left = left + 'px';
+                    confetti.style.top = '-20px';
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Animate the confetti
+                    const fallSpeed = Math.random() * 5 + 2;
+                    const swayAmount = Math.random() * 5 - 2.5;
+                    
+                    let posY = -20;
+                    let posX = left;
+                    let rotation = 0;
+                    
+                    function fall() {
+                        if (posY > window.innerHeight) {
+                            confetti.remove();
+                            return;
+                        }
+                        
+                        posY += fallSpeed;
+                        posX += swayAmount * Math.sin(posY / 30);
+                        rotation += 2;
+                        
+                        confetti.style.top = posY + 'px';
+                        confetti.style.left = posX + 'px';
+                        confetti.style.transform = `rotate(${rotation}deg)`;
+                        
+                        requestAnimationFrame(fall);
+                    }
+                    
+                    fall();
+                }, Math.random() * 2000);
+            }
+        }
+        
+        // Restart the game
+        function restartGame() {
+            // Reset game variables
+            flowersClicked = 0;
+            
+            // Reset UI
+            counter.textContent = `0 / ${totalFlowers}`;
+            message.textContent = "Find and click on all the flowers!";
+            heart.style.transform = 'rotate(-45deg) scale(0)';
+            
+            // Remove flower click-states
+            document.querySelectorAll('.flower').forEach(flower => {
+                flower.classList.remove('clicked');
+                flower.style.transform = 'scale(1)';
+            });
+            
+            // Reset display
+            finalMessage.style.display = 'none';
+            gameScreen.style.display = 'block';
+            
+            // Remove heart click handler
+            heartContainer.onclick = null;
+            
+            // Remove any confetti
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
+        }
+    </script>
+</body>
+</html>
